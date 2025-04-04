@@ -1,0 +1,2 @@
+web: bin/rails server -b ${BINDING:-'0.0.0.0'} -p ${PORT:-5100}
+vite: bin/vite dev

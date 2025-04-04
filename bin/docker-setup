@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e
+
+echo "🚀 Iniciando setup do Docker..."
+
+echo "📦 Construindo as imagens..."
+docker compose build
+
+echo "🔄 Parando containers existentes..."
+docker compose down
+
+echo "▶️ Iniciando containers em background..."
+docker compose up -d
+
+echo "⏳ Aguardando PostgreSQL inicializar..."
+until docker compose exec db pg_isready -U postgres; do
+  echo "🔄 PostgreSQL está iniciando..."
+  sleep 2
+done
+echo "✅ PostgreSQL está pronto!"
+
+echo "⏳ Aguardando mais 5 segundos para garantir..."
+sleep 5
+
+echo "🗄️ Criando banco de dados..."
+if docker compose exec web bundle exec rails db:create 2>/dev/null; then
+  echo "✅ Banco de dados criado com sucesso!"
+else
+  echo "⚠️ Banco de dados já existe ou ocorreu um erro. Tentando prosseguir..."
+fi
+
+echo "🔄 Rodando migrações..."
+docker compose exec web bundle exec rails db:migrate
+
+echo "📦 Instalando dependências do Node.js..."
+docker compose exec web yarn install
+
+echo "✅ Setup concluído! Você pode ver os logs com: docker compose logs -f"
+
+echo "🌐 A aplicação estará disponível em: http://localhost:3000"
+
+echo "🚀 Iniciando o servidor..."
+docker compose up
+
+echo "🌐 Acesse: http://localhost:3000" 

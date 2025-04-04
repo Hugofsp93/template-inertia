@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+      - "3036:3036"  # Para o Vite
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+      - node_modules:/rails/node_modules
+      - tmp-data:/rails/tmp
+    environment:
+      - RAILS_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/template_inertia_development
+      - REDIS_URL=redis://redis:6379/1
+      - BUNDLE_PATH=/usr/local/bundle
+      - BUNDLE_APP_CONFIG=/usr/local/bundle
+      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
+      - VITE_RUBY_HOST=0.0.0.0
+      - PORT=3000
+      - BINDING=0.0.0.0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    stdin_open: true
+    tty: true
+
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=template_inertia_development
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    command: postgres -N 500  # Reduz o número máximo de conexões
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME}/docker/postgres-data
+  redis_data:
+  bundle_cache:
+  node_modules:
+  tmp-data: 
