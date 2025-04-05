@@ -1,4 +1,17 @@
 Rails.application.routes.draw do
+  devise_for :users, controllers: {
+    sessions: "users/sessions",
+    registrations: "users/registrations",
+    passwords: "users/passwords"
+  }
+
+  resources :users, except: [ :new, :create ] do
+    collection do
+      get "sign_up", to: "users#new", as: :sign_up
+      post "sign_up", to: "users#create"
+    end
+  end
+
   get "inertia-example", to: "inertia_example#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -11,5 +24,5 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "users#index"
 end
