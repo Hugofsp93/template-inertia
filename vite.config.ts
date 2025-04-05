@@ -14,7 +14,8 @@ export default defineConfig({
     port: 3036,
     strictPort: true,
     hmr: {
-      clientPort: 3036
+      host: 'localhost',
+      protocol: 'ws'
     }
   }
 })
