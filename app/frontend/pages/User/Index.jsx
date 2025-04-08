@@ -1,6 +1,14 @@
 import { Head, Link } from '@inertiajs/react'
+import { translateRole } from '../../utils/translations'
+import { router } from '@inertiajs/react'
 
 export default function Index({ users, flash, auth }) {
+  const handleDelete = (userId) => {
+    if (confirm('Tem certeza que deseja excluir este usuário?')) {
+      router.delete(`/users/${userId}`)
+    }
+  }
+
   return (
     <>
       <Head title="Usuários" />
@@ -19,9 +27,9 @@ export default function Index({ users, flash, auth }) {
 
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Usuários</h1>
-          {auth.is_admin || auth.is_super_admin && (
+          {(auth.is_admin || auth.is_super_admin) && (
             <Link
-              href={`/users/${auth.user.id}/new`}
+              href={`/users/new`}
               className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
             >
               Novo Usuário
@@ -57,7 +65,7 @@ export default function Index({ users, flash, auth }) {
                     <div className="text-sm text-gray-500">{user.email}</div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{user.role}</div>
+                    <div className="text-sm text-gray-500">{translateRole(user.role)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Link
@@ -74,6 +82,14 @@ export default function Index({ users, flash, auth }) {
                         Editar
                       </Link>
                     }
+                    {(auth.is_admin || auth.is_super_admin) && (user.role != 'super_admin') && (
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="text-red-600 hover:text-red-900 mr-4"
+                      >
+                        Excluir
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

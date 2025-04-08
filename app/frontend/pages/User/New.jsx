@@ -1,3 +1,4 @@
+import React from 'react'
 import { Head, useForm } from '@inertiajs/react'
 import Form from './Form'
 
@@ -12,16 +13,12 @@ export default function New({ auth, can_edit_role }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log('Dados sendo enviados:', data) // Log para debug
-    
-    // Enviando os dados para a rota correta de criação de usuário
-    post(`/users/${auth.user.id}/new`, data)
+    post('/users/new')
   }
 
   return (
     <>
       <Head title="Novo Usuário" />
-
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">

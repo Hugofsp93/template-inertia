@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react'
 import { Link } from '@inertiajs/react'
+import { translateRole } from '../../utils/translations'
 
 export default function Show({ auth, user }) {
   return (
@@ -45,9 +46,7 @@ export default function Show({ auth, user }) {
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Função</h3>
                   <p className="mt-1 text-sm text-gray-600">
-                    {user.role === 'super_admin' && 'Super Administrador'}
-                    {user.role === 'admin' && 'Administrador'}
-                    {user.role === 'user' && 'Usuário'}
+                    {translateRole(user.role)}
                   </p>
                 </div>
 

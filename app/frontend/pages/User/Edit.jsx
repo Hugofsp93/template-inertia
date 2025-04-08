@@ -10,6 +10,11 @@ export default function Edit({ user, can_edit_role, auth }) {
     password_confirmation: ''
   })
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    patch(`/users/${user.id}`)
+  }
+
   return (
     <>
       <Head title={`Editar Usuário - ${user.name}`} />
@@ -33,10 +38,7 @@ export default function Edit({ user, can_edit_role, auth }) {
             setData={setData}
             errors={errors}
             processing={processing}
-            onSubmit={(e) => {
-              e.preventDefault()
-              patch(`/users/${user.id}`)
-            }}
+            onSubmit={handleSubmit}
             user={user}
             can_edit_role={can_edit_role}
             auth={auth}

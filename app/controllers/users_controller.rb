@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
-  skip_before_action :authenticate_user!, only: [ :new, :create ]
+  before_action :authenticate_user!
   before_action :set_user, only: [ :show, :edit, :update, :destroy ]
-  after_action :verify_authorized, except: [ :index, :new, :create ]
+  after_action :verify_authorized, except: [ :index, :new_user, :create_user ]
   after_action :verify_policy_scoped, only: :index
 
   inertia_share flash: -> { flash.to_hash }
@@ -22,35 +22,7 @@ class UsersController < ApplicationController
     }
   end
 
-  # GET /sign_up (registro público)
-  def new
-    if user_signed_in?
-      redirect_to root_path, alert: "Você já está logado."
-      return
-    end
-    @user = User.new
-    render inertia: "Auth/Register"
-  end
-
-  # POST /sign_up (registro público)
-  def create
-    if user_signed_in?
-      redirect_to root_path, alert: "Você já está logado."
-      return
-    end
-    @user = User.new(public_user_params)
-    @user.add_role(:user) # Define como usuário comum por padrão
-
-    if @user.save
-      redirect_to new_user_session_path, notice: "Usuário criado com sucesso. Faça login para continuar."
-    else
-      render inertia: "Auth/Register", props: {
-        errors: @user.errors
-      }, status: :unprocessable_entity
-    end
-  end
-
-  # GET /users/:id/new (criação por admin)
+  # GET /users/new (criação no admin)
   def new_user
     authorize User
     @user = User.new
@@ -59,7 +31,7 @@ class UsersController < ApplicationController
     }
   end
 
-  # POST /users/:id/new (criação por admin)
+  # POST /users/new (criação no admin)
   def create_user
     authorize User
     Rails.logger.debug "Parâmetros recebidos: #{params.inspect}"
@@ -91,20 +63,15 @@ class UsersController < ApplicationController
   def update
     authorize @user
 
-    # Verifica se pode editar o role
-    unless can_edit_role?
-      params.delete(:role)
-    end
-
-    if @user.update(admin_user_params)
-      # Atualiza o role se permitido
+    update_params_filtered = filter_password_params(update_params)
+    if @user.update(update_params_filtered)
       if can_edit_role? && params[:role].present?
         @user.roles = []
         @user.add_role(params[:role])
       end
 
       # Se o usuário estiver alterando sua própria senha, mantém ele logado
-      if @user == current_user && admin_user_params[:password].present?
+      if @user == current_user && params[:password].present?
         bypass_sign_in(@user)
       end
 
@@ -113,7 +80,10 @@ class UsersController < ApplicationController
       render inertia: "User/Edit", props: {
         user: @user.as_json(only: [ :id, :name, :email, :created_at, :updated_at ], methods: [ :role ]),
         errors: @user.errors,
-        can_edit_role: can_edit_role?
+        can_edit_role: can_edit_role?,
+        auth: {
+          user: current_user.as_json(only: [ :id, :name, :email ], methods: [ :role ])
+        }
       }, status: :unprocessable_entity
     end
   end
@@ -131,8 +101,17 @@ class UsersController < ApplicationController
       @user = User.find(params[:id])
     end
 
-    def public_user_params
-      params.require(:user).permit(:name, :email, :password, :password_confirmation)
+    def update_params
+      params.permit(:name, :email, :password, :password_confirmation, :role)
+    end
+
+    def filter_password_params(params)
+      # Remove senha e confirmação se estiverem vazias
+      if params[:password].blank? && params[:password_confirmation].blank?
+        params.except(:password, :password_confirmation)
+      else
+        params
+      end
     end
 
     def admin_user_params

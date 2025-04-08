@@ -55,10 +55,10 @@ class UserPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       if user.super_admin?
-        scope.all
+        scope.joins(:roles).where.not(roles: { name: "super_admin" }).order(name: :asc)
       elsif user.admin?
-        # Admin não vê super_admins
-        scope.joins(:roles).where.not(roles: { name: "super_admin" })
+        # Admin não vê super_admins e admins
+        scope.joins(:roles).where.not(roles: { name: [ "super_admin", "admin" ] }).order(name: :asc)
       else
         # Usuário comum só vê ele mesmo
         scope.where(id: user.id)
