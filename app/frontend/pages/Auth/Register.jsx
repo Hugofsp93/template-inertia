@@ -129,4 +129,7 @@ export default function Register({ errors = [] }) {
       </div>
     </>
   )
-} 
+}
+
+// Marca a página como pública para não usar o layout autenticado
+Register.public = true 

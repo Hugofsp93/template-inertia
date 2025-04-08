@@ -1,6 +1,7 @@
 import { createInertiaApp } from '@inertiajs/react'
 import { createElement } from 'react'
 import { createRoot } from 'react-dom/client'
+import AuthenticatedLayout from '@/layouts/AuthenticatedLayout'
 
 createInertiaApp({
   // Set default page title
@@ -22,16 +23,19 @@ createInertiaApp({
       console.error(`Missing Inertia page component: '${name}.jsx'`)
     }
 
-    // To use a default layout, import the Layout component
-    // and use the following lines.
-    // see https://inertia-rails.dev/guide/pages#default-layouts
-    //
-    // page.default.layout ||= (page) => createElement(Layout, null, page)
+    // Se a página NÃO tiver public = true, aplica o layout autenticado
+    if (!page.default.public) {
+      console.log('Aplicando layout autenticado para:', name)
+      page.default.layout = (page) => createElement(AuthenticatedLayout, { user: page.props.auth.user }, page)
+    } else {
+      console.log('Página pública, sem layout autenticado:', name)
+    }
 
     return page
   },
 
   setup({ el, App, props }) {
+    console.log('Setup do App:', props)
     if (el) {
       createRoot(el).render(createElement(App, props))
     } else {

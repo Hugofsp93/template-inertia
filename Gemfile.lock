@@ -186,6 +186,8 @@ GEM
     public_suffix (6.0.1)
     puma (6.6.0)
       nio4r (~> 2.0)
+    pundit (2.5.0)
+      activesupport (>= 3.0.0)
     racc (1.8.1)
     rack (3.1.12)
     rack-proxy (0.7.7)
@@ -241,6 +243,7 @@ GEM
       actionpack (>= 5.2)
       railties (>= 5.2)
     rexml (3.4.1)
+    rolify (6.0.1)
     rubocop (1.75.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -336,8 +339,10 @@ DEPENDENCIES
   jbuilder
   pg
   puma (>= 5.0)
+  pundit
   rails (~> 7.2.2, >= 7.2.2.1)
   redis (>= 4.0.1)
+  rolify
   rubocop-rails-omakase
   selenium-webdriver
   tzinfo-data

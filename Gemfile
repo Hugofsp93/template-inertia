@@ -51,8 +51,9 @@ group :test do
   gem "selenium-webdriver"
 end
 
+# Template stuff
 gem "inertia_rails", "~> 3.7"
-
 gem "vite_rails", "~> 3.0"
-
 gem "devise", "~> 4.9"
+gem "rolify"
+gem "pundit"
