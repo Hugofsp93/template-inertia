@@ -133,4 +133,7 @@ export default function Login({ errors = [], flash = {} }) {
       </div>
     </>
   )
-} 
+}
+
+// Marca a página como pública para não usar o layout autenticado
+Login.public = true 

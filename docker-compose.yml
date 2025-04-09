@@ -11,6 +11,7 @@ services:
       - bundle_cache:/usr/local/bundle
       - node_modules:/rails/node_modules
       - tmp-data:/rails/tmp
+      - .env:/rails/.env
     environment:
       - RAILS_ENV=development
       - DATABASE_URL=postgres://postgres:postgres@db:5432/template_inertia_development
@@ -37,18 +38,11 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=template_inertia_development
-      - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - "5432:5432"
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
     command: postgres -N 500  # Reduz o número máximo de conexões
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d template_inertia_development"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -67,11 +61,6 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${HOME}/docker/postgres-data
   redis_data:
   bundle_cache:
   node_modules:

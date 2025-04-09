@@ -1,7 +1,20 @@
-import { Head, Link } from '@inertiajs/react'
+import { Head, Link, useForm } from '@inertiajs/react'
 import Form from './Form'
 
-export default function Edit({ user }) {
+export default function Edit({ user, can_edit_role, auth }) {
+  const { data, setData, errors, processing, patch } = useForm({
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    password: '',
+    password_confirmation: ''
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    patch(`/users/${user.id}`)
+  }
+
   return (
     <>
       <Head title={`Editar Usuário - ${user.name}`} />
@@ -21,12 +34,14 @@ export default function Edit({ user }) {
 
         <div className="bg-white shadow-md rounded-lg p-6">
           <Form
+            data={data}
+            setData={setData}
+            errors={errors}
+            processing={processing}
+            onSubmit={handleSubmit}
             user={user}
-            onSubmit={(form) => {
-              form.transform((data) => ({ user: data }))
-              form.patch(`/users/${user.id}`)
-            }}
-            submitText="Atualizar Usuário"
+            can_edit_role={can_edit_role}
+            auth={auth}
           />
         </div>
       </div>

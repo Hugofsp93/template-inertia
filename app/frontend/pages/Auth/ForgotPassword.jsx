@@ -90,4 +90,7 @@ export default function ForgotPassword({ errors = [], flash = {} }) {
       </div>
     </>
   )
-} 
+}
+
+// Marca a página como pública para não usar o layout autenticado
+ForgotPassword.public = true 

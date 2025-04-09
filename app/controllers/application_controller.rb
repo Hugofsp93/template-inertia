@@ -1,4 +1,8 @@
 class ApplicationController < ActionController::Base
+  include Pundit::Authorization
+
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
@@ -6,13 +10,21 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   inertia_share auth: -> {
-    {
-      user: current_user ? {
-        id: current_user.id,
-        email: current_user.email,
-        name: current_user.name
-      } : nil
-    }
+    if current_user
+      {
+        user: current_user.as_json(only: [ :id, :name, :email, :created_at, :updated_at ], methods: [ :role ]),
+        role: current_user.role,
+        is_admin: current_user.admin?,
+        is_super_admin: current_user.super_admin?
+      }
+    else
+      {
+        user: nil,
+        role: nil,
+        is_admin: false,
+        is_super_admin: false
+      }
+    end
   }
 
   inertia_share flash: -> {
@@ -27,5 +39,12 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [ :name ])
     devise_parameter_sanitizer.permit(:account_update, keys: [ :name ])
+  end
+
+  private
+
+  def user_not_authorized
+    flash[:alert] = "Você não está autorizado a realizar esta ação."
+    redirect_back(fallback_location: root_path)
   end
 end

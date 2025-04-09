@@ -1,8 +1,14 @@
 import { Head, Link } from '@inertiajs/react'
-import { Fragment } from 'react'
-import User from './User'
+import { translateRole } from '../../utils/translations'
+import { router } from '@inertiajs/react'
 
-export default function Index({ users, flash }) {
+export default function Index({ users, flash, auth }) {
+  const handleDelete = (userId) => {
+    if (confirm('Tem certeza que deseja excluir este usuário?')) {
+      router.delete(`/users/${userId}`)
+    }
+  }
+
   return (
     <>
       <Head title="Usuários" />
@@ -20,23 +26,15 @@ export default function Index({ users, flash }) {
         )}
 
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold">Usuários</h1>
+          <h1 className="text-2xl font-bold">Usuários</h1>
+          {(auth.is_admin || auth.is_super_admin) && (
             <Link
-              href="/users/sign_out"
-              method="delete"
-              as="button"
-              className="text-gray-600 hover:text-gray-900"
+              href={`/users/new`}
+              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
             >
-              Sair
+              Novo Usuário
             </Link>
-          </div>
-          {/* <Link
-            href="/users/new"
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-          >
-            Novo Usuário
-          </Link> */}
+          )}
         </div>
 
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -47,7 +45,10 @@ export default function Index({ users, flash }) {
                   Nome
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
+                  E-mail
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Perfil de acesso
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Ações
@@ -57,11 +58,14 @@ export default function Index({ users, flash }) {
             <tbody className="bg-white divide-y divide-gray-200">
               {users.map((user) => (
                 <tr key={user.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{user.name}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm text-gray-500">{user.email}</div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{translateRole(user.role)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Link
@@ -70,21 +74,22 @@ export default function Index({ users, flash }) {
                     >
                       Detalhes
                     </Link>
-                    <Link
-                      href={`/users/${user.id}/edit`}
-                      className="text-indigo-600 hover:text-indigo-900 mr-4"
-                    >
-                      Editar
-                    </Link>
-                    {/* <Link
-                      href={`/users/${user.id}`}
-                      method="delete"
-                      as="button"
-                      className="text-red-600 hover:text-red-900"
-                      data-confirm="Tem certeza que deseja excluir este usuário?"
-                    >
-                      Excluir
-                    </Link> */}
+                    {user.role != 'super_admin' &&
+                      <Link
+                        href={`/users/${user.id}/edit`}
+                        className="text-indigo-600 hover:text-indigo-900 mr-4"
+                      >
+                        Editar
+                      </Link>
+                    }
+                    {(auth.is_admin || auth.is_super_admin) && (user.role != 'super_admin') && (
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="text-red-600 hover:text-red-900 mr-4"
+                      >
+                        Excluir
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

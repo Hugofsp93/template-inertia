@@ -1,31 +1,40 @@
-import { Head, Link } from '@inertiajs/react'
+import React from 'react'
+import { Head, useForm } from '@inertiajs/react'
 import Form from './Form'
 
-export default function New({ user }) {
+export default function New({ auth, can_edit_role }) {
+  const { data, setData, post, processing, errors } = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+    role: 'user' // Valor padrão
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    post('/users/new')
+  }
+
   return (
     <>
       <Head title="Novo Usuário" />
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Novo Usuário</h1>
-          <Link
-            href="/users"
-            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-          >
-            Voltar
-          </Link>
-        </div>
-
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <Form
-            user={user}
-            onSubmit={(form) => {
-              form.transform((data) => ({ user: data }))
-              form.post('/users')
-            }}
-            submitText="Criar Usuário"
-          />
+      <div className="py-12">
+        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div className="p-6 text-gray-900">
+              <h1 className="text-2xl font-semibold mb-4">Novo Usuário</h1>
+              <Form
+                data={data}
+                setData={setData}
+                errors={errors}
+                processing={processing}
+                onSubmit={handleSubmit}
+                can_edit_role={can_edit_role}
+                auth={auth}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </>
