@@ -1,61 +1,84 @@
-import { Head } from '@inertiajs/react'
-import { Link } from '@inertiajs/react'
+import React from 'react'
+import { Head, Link } from '@inertiajs/react'
 import { translateRole } from '../../utils/translations'
 
-export default function Show({ auth, user }) {
+export default function Show({ user, auth }) {
   return (
     <>
       <Head title={`Usuário - ${user.name}`} />
 
-      <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div className="flex justify-between items-center pt-6 pb-4 px-6 text-gray-900">
-              <h1 className="text-2xl font-semibold">Detalhes do Usuário</h1>
-              
-              <div className="space-x-2">
-                {user.role != 'super_admin' &&
-                  <Link
-                    href={`/users/${user.id}/edit`}
-                    className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-                  >
-                    Editar
-                  </Link>
-                }
-                <Link
-                  href={`/users`}
-                  className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-                >
-                  Voltar
-                </Link>
-              </div>
-            </div>
-            
-            <div className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Nome</h3>
-                  <p className="mt-1 text-sm text-gray-600">{user.name}</p>
-                </div>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-light-text-primary dark:text-dark-text-primary">
+            Detalhes do Usuário
+          </h1>
+          <div className="flex space-x-4">
+            <Link
+              href="/users"
+              className="inline-flex items-center px-4 py-2 border border-light-border dark:border-dark-border rounded-md text-sm font-medium text-light-text-primary dark:text-dark-text-primary hover:bg-light-page dark:hover:bg-dark-page focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-dark-page transition-colors duration-250"
+            >
+              Voltar
+            </Link>
+            {user.role !== 'super_admin' && (
+              <Link
+                href={`/users/${user.id}/edit`}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-light-sm dark:shadow-dark-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-dark-page transition-colors duration-250"
+              >
+                Editar
+              </Link>
+            )}
+          </div>
+        </div>
 
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Email</h3>
-                  <p className="mt-1 text-sm text-gray-600">{user.email}</p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Função</h3>
-                  <p className="mt-1 text-sm text-gray-600">
-                    {translateRole(user.role)}
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Criado em</h3>
-                  <p className="mt-1 text-sm text-gray-600">
-                    {new Date(user.created_at).toLocaleDateString('pt-BR')}
-                  </p>
-                </div>
+        <div className="bg-light-card dark:bg-dark-card shadow-light-md dark:shadow-dark-md rounded-lg overflow-hidden border border-light-border dark:border-dark-border">
+          <div className="px-6 py-5 space-y-6">
+            <div>
+              <h3 className="text-lg font-medium text-light-text-primary dark:text-dark-text-primary">
+                Informações do Usuário
+              </h3>
+              <div className="mt-5 border-t border-light-border dark:border-dark-border">
+                <dl className="divide-y divide-light-border dark:divide-dark-border">
+                  <div className="py-4 grid grid-cols-3 gap-4">
+                    <dt className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
+                      Nome
+                    </dt>
+                    <dd className="text-sm text-light-text-primary dark:text-dark-text-primary col-span-2">
+                      {user.name}
+                    </dd>
+                  </div>
+                  <div className="py-4 grid grid-cols-3 gap-4">
+                    <dt className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
+                      Email
+                    </dt>
+                    <dd className="text-sm text-light-text-primary dark:text-dark-text-primary col-span-2">
+                      {user.email}
+                    </dd>
+                  </div>
+                  <div className="py-4 grid grid-cols-3 gap-4">
+                    <dt className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
+                      Perfil de acesso
+                    </dt>
+                    <dd className="text-sm text-light-text-primary dark:text-dark-text-primary col-span-2">
+                      {translateRole(user.role)}
+                    </dd>
+                  </div>
+                  <div className="py-4 grid grid-cols-3 gap-4">
+                    <dt className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
+                      Criado em
+                    </dt>
+                    <dd className="text-sm text-light-text-primary dark:text-dark-text-primary col-span-2">
+                      {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                    </dd>
+                  </div>
+                  <div className="py-4 grid grid-cols-3 gap-4">
+                    <dt className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
+                      Última atualização
+                    </dt>
+                    <dd className="text-sm text-light-text-primary dark:text-dark-text-primary col-span-2">
+                      {new Date(user.updated_at).toLocaleDateString('pt-BR')}
+                    </dd>
+                  </div>
+                </dl>
               </div>
             </div>
           </div>

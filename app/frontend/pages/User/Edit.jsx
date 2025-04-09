@@ -1,38 +1,34 @@
-import { Head, Link, useForm } from '@inertiajs/react'
+import React from 'react'
+import { Head } from '@inertiajs/react'
+import { useForm } from '@inertiajs/react'
 import Form from './Form'
 
 export default function Edit({ user, can_edit_role, auth }) {
-  const { data, setData, errors, processing, patch } = useForm({
+  const { data, setData, errors, processing, put } = useForm({
     name: user.name,
     email: user.email,
-    role: user.role,
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    role: user.role
   })
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    patch(`/users/${user.id}`)
+    put(`/users/${user.id}`)
   }
 
   return (
     <>
       <Head title={`Editar Usuário - ${user.name}`} />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Editar Usuário</h1>
-          <div className="space-x-2">
-            <Link
-              href={`/users/${user.id}`}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Voltar
-            </Link>
-          </div>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-light-text-primary dark:text-dark-text-primary">
+            Editar Usuário
+          </h1>
         </div>
 
-        <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="bg-light-card dark:bg-dark-card shadow-light-md dark:shadow-dark-md rounded-lg overflow-hidden border border-light-border dark:border-dark-border p-6">
           <Form
             data={data}
             setData={setData}
