@@ -12,89 +12,98 @@ export default function Index({ users, flash, auth }) {
   return (
     <>
       <Head title="Usuários" />
-      <div className="container mx-auto px-4 py-8">
+      
+      <div className="space-y-6">
         {flash.notice && (
-          <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
-            {flash.notice}
+          <div className="p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
+            <p className="text-sm text-green-700 dark:text-green-200">{flash.notice}</p>
           </div>
         )}
         
         {flash.alert && (
-          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
-            {flash.alert}
+          <div className="p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-sm text-red-700 dark:text-red-200">{flash.alert}</p>
           </div>
         )}
 
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Usuários</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-light-text-primary dark:text-dark-text-primary">
+            Usuários
+          </h1>
           {(auth.is_admin || auth.is_super_admin) && (
             <Link
-              href={`/users/new`}
-              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+              href="/users/new"
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-light-sm dark:shadow-dark-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-dark-page transition-colors duration-250"
             >
               Novo Usuário
             </Link>
           )}
         </div>
 
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nome
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  E-mail
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Perfil de acesso
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{user.email}</div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{translateRole(user.role)}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Link
-                      href={`/users/${user.id}`}
-                      className="text-indigo-600 hover:text-indigo-900 mr-4"
-                    >
-                      Detalhes
-                    </Link>
-                    {user.role != 'super_admin' &&
-                      <Link
-                        href={`/users/${user.id}/edit`}
-                        className="text-indigo-600 hover:text-indigo-900 mr-4"
-                      >
-                        Editar
-                      </Link>
-                    }
-                    {(auth.is_admin || auth.is_super_admin) && (user.role != 'super_admin') && (
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="text-red-600 hover:text-red-900 mr-4"
-                      >
-                        Excluir
-                      </button>
-                    )}
-                  </td>
+        <div className="bg-light-card dark:bg-dark-card shadow-light-md dark:shadow-dark-md rounded-lg overflow-hidden border border-light-border dark:border-dark-border">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-light-border dark:divide-dark-border">
+              <thead className="bg-light-page dark:bg-dark-card">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
+                    Nome
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
+                    E-mail
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
+                    Perfil de acesso
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
+                    Ações
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-light-card dark:bg-dark-card divide-y divide-light-border dark:divide-dark-border">
+                {users.map((user) => (
+                  <tr key={user.id} className="hover:bg-light-page dark:hover:bg-dark-page transition-colors duration-250">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-light-text-primary dark:text-dark-text-primary">
+                      {user.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">
+                      {user.email}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-light-text-secondary dark:text-dark-text-secondary">
+                      {translateRole(user.role)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-4">
+                      <Link
+                        href={`/users/${user.id}`}
+                        className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-250"
+                      >
+                        Detalhes
+                      </Link>
+                      
+                      {user.role !== 'super_admin' && (
+                        <>
+                          <Link
+                            href={`/users/${user.id}/edit`}
+                            className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-250"
+                          >
+                            Editar
+                          </Link>
+                          
+                          {(auth.is_admin || auth.is_super_admin) && (
+                            <button
+                              onClick={() => handleDelete(user.id)}
+                              className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-250"
+                            >
+                              Excluir
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>
